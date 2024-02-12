@@ -42,7 +42,7 @@ public class BodegaRepository : IBodegaRepository
         {
             if (!BodegaExists(bodega.BodegaID))
             {
-                return; // O manejar como prefieras, por ejemplo lanzando una excepción propia
+                return;
             }
             else
             {

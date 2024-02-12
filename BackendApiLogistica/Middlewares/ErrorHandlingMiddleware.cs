@@ -11,11 +11,13 @@ namespace BackendApiLogistica.Middlewares
     {
         private readonly RequestDelegate _next;
 
+        // Constructor
         public ErrorHandlingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
+        // Procesa la petición
         public async Task Invoke(HttpContext context)
         {
             try
@@ -28,12 +30,12 @@ namespace BackendApiLogistica.Middlewares
             }
         }
 
+        // Gestiona las excepciones
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var code = HttpStatusCode.InternalServerError; // 500 if unexpected
+            var code = HttpStatusCode.InternalServerError; // Error 500 por defecto
 
-            if (exception is ValidationException) code = HttpStatusCode.BadRequest; // 400 for validation errors
-            // Aquí puedes manejar diferentes tipos de excepciones y asignar códigos de estado HTTP adecuados
+            if (exception is ValidationException) code = HttpStatusCode.BadRequest; // Error 400 para errores de validación
 
             var result = JsonConvert.SerializeObject(new { error = exception.Message });
             context.Response.ContentType = "application/json";

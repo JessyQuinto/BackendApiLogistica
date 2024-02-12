@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using BackendApiLogistica.Data; // Asegúrate de que este es el espacio de nombres correcto para tu contexto de EF
+using BackendApiLogistica.Data;
 using Microsoft.OpenApi.Models;
-using BackendApiLogistica.Repositories.Interfaces; // Verifica el espacio de nombres de tus interfaces
-using BackendApiLogistica.Repositories; // Verifica el espacio de nombres de tus implementaciones de repositorio
+using BackendApiLogistica.Repositories.Interfaces; 
+using BackendApiLogistica.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,16 +10,16 @@ using BackendApiLogistica.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Añade los servicios al contenedor.
+// Servicios al contenedor
 builder.Services.AddControllers();
 
-// Configuración de Swagger/OpenAPI
+// Configura Swagger/OpenAPI
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "BackendApiLogistica", Version = "v1" });
 });
 
-// Registra GestionLogisticaContext con el contenedor de servicios DI
+// Conexión a base de datos
 builder.Services.AddDbContext<GestionLogisticaContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -31,13 +31,13 @@ builder.Services.AddScoped<IPuertoRepository, PuertoRepository>();
 builder.Services.AddScoped<IEnvioMaritimoRepository, EnvioMaritimoRepository>();
 builder.Services.AddScoped<IEnvioTerrestreRepository, EnvioTerrestreRepository>();
 
-// Configuración de CORS
+// Configuración CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200") // Asegúrate de que este es el origen correcto para tu aplicación Angular
+            builder.WithOrigins("http://localhost:4200") // Origen para la app Angular
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configura el pipeline de solicitudes HTTP.
+// Pipeline de solicitudes HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -54,11 +54,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Aplica la política CORS aquí antes de UseRouting y UseAuthorization
+// Aplica CORS
 app.UseCors("AllowAngularApp");
 
-// Registro del Middleware de Manejo de Errores
-app.UseMiddleware<ErrorHandlingMiddleware>(); // Asegúrate de agregar esta línea
+// Middleware de errores
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthorization();
 
